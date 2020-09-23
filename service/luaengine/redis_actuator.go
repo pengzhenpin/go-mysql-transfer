@@ -163,7 +163,7 @@ func DoRedisOps(input map[string]interface{}, action string, rule *global.Rule) 
 			resp.Field = lvToString(field)
 			resp.Val = lvToInterface(val, true)
 		} else {
-			resp.Key = kk[9:len(kk)]
+			resp.Key = kk[9:]
 			resp.Val = lvToInterface(v, true)
 		}
 

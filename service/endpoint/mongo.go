@@ -102,7 +102,7 @@ func (s *MongoEndpoint) collection(key string) *mongo.Collection {
 	if !exist {
 		index := strings.Index(key, "-*|*-")
 		db := key[0:index]
-		cc := key[index+5 : len(key)]
+		cc := key[index+5:]
 		collection = s.client.Database(db).Collection(cc)
 		s.collections[key] = collection
 	}

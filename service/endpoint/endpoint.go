@@ -18,6 +18,7 @@
 package endpoint
 
 import (
+	"strconv"
 	"strings"
 	"time"
 
@@ -152,6 +153,13 @@ func convertColumnData(value interface{}, col *schema.TableColumn, rule *global.
 		case []byte:
 			return string(v)
 		}
+	case schema.TYPE_DECIMAL:
+		raw, ok := value.([]byte)
+		if ok { // decimal in mysql allways be []byte ?
+			// to es, decimal precision is important? if so,use string
+			d, _ := strconv.ParseFloat(string(raw), 64)
+			return d
+		}
 	}
 
 	return value
@@ -220,12 +228,11 @@ func primaryKey(re *global.RowRequest, rule *global.Rule) interface{} {
 			key += stringutil.ToString(re.Row[index])
 		}
 		return key
-	} else {
-		index := rule.TableInfo.PKColumns[0]
-		data := re.Row[index]
-		column := rule.TableInfo.Columns[index]
-		return convertColumnData(data, &column, rule)
 	}
+	index := rule.TableInfo.PKColumns[0]
+	data := re.Row[index]
+	column := rule.TableInfo.Columns[index]
+	return convertColumnData(data, &column, rule)
 }
 
 func pushFailedRows(rs []*global.RowRequest, cached *storage.BoltRowStorage) {
@@ -294,7 +301,7 @@ func buildPropertiesByRule(rule *global.Rule) map[string]interface{} {
 	}
 
 	if len(rule.DefaultColumnValueMap) > 0 {
-		for key, _ := range rule.DefaultColumnValueMap {
+		for key := range rule.DefaultColumnValueMap {
 			property := make(map[string]interface{})
 			property["type"] = "keyword"
 			properties[key] = property

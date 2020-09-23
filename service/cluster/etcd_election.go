@@ -101,8 +101,9 @@ func (s *etcdElection) doElect() error {
 				s.informFalse()
 				break
 			case <-ctx.Done():
-				ctxTmp, _ := context.WithTimeout(context.Background(), time.Second*_electionNodeTTL)
+				ctxTmp, fn := context.WithTimeout(context.Background(), time.Second*_electionNodeTTL)
 				election.Resign(ctxTmp)
+				fn()
 				session.Close()
 				s.informFalse()
 				return nil

@@ -219,7 +219,7 @@ func (s *Elastic7Endpoint) Consume(rows []*global.RowRequest) {
 		expect = false
 	}
 
-	if len(r.Failed()) > 0 {
+	if r != nil && len(r.Failed()) > 0 {
 		expect = false
 		for _, f := range r.Failed() {
 			logutil.Error(f.Error.Reason)

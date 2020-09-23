@@ -19,6 +19,7 @@ package luaengine
 
 import (
 	"encoding/json"
+
 	lua "github.com/yuin/gopher-lua"
 
 	"go-mysql-transfer/util/byteutil"
@@ -145,16 +146,17 @@ func lvToInterface(lv lua.LValue, tableToJson bool) interface{} {
 				return stringutil.ToJsonString(ret)
 			}
 			return ret
-		} else { // array
-			ret := make([]interface{}, 0, len)
-			for i := 1; i <= len; i++ {
-				ret = append(ret, lvToInterface(t.RawGetInt(i), false))
-			}
-			if tableToJson {
-				return stringutil.ToJsonString(ret)
-			}
-			return ret
 		}
+		// array
+		ret := make([]interface{}, 0, len)
+		for i := 1; i <= len; i++ {
+			ret = append(ret, lvToInterface(t.RawGetInt(i), false))
+		}
+		if tableToJson {
+			return stringutil.ToJsonString(ret)
+		}
+		return ret
+
 	default:
 		return lv
 	}
